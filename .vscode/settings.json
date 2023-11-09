@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "template.h": "c",
+        "interrupt.h": "c",
+        "_port.h": "c",
+        "_main.h": "c",
+        "io.h": "c",
+        "common.h": "c",
+        "delay.h": "c",
+        "uart.h": "c",
+        "assert.h": "c"
+    }
+}
