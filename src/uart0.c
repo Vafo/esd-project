@@ -2,7 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define BUF_SIZE 256 // At least 2
+#define BUF_SIZE 256 // At least 2 
 #if ((BUF_SIZE - 1) & BUF_SIZE) != 0
     #error "BUF_SIZE is not of power of 2"
 #endif
@@ -38,31 +38,31 @@ inline uint8_t buf_pop(uint8_t* buf, int16_t* pos) {
 }
 
 inline void send_n_incr() {
+    // UCSR0B |= (1<<UDRIE0); // enable interrupt
     UDR0 = buf_pop(tx_buf, &tx_beg);
     m_state |= (1 << tx_in_progress);
 }
 
 // TX: Single byte 
-SIGNAL(USART0_UDRE_vect) {
+SIGNAL(USART0_TX_vect) {
+    PORTB ^= (1 << PORTB7);
+    // UDR1 = 'A';
     if(tx_beg != tx_end) {
         send_n_incr();
     } else {
+        // UCSR1B &= ~(1<<UDRIE1); // disable intr
         m_state &= ~(1 << tx_in_progress); // turn off tx_in_progress
     }
 }
 
-// SIGNAL(USART0_TX_vect) {
-//     while((UCSR0A & (1<<UDRE0)));	// transmitter polling
-//         UDR0 = ;
-// }
-
 SIGNAL(USART0_RX_vect) {
-    while( 
-            ((UCSR0A) & (1 << RXC0)) // while there is data
-            && (circular_increment(rx_end, 1) != rx_beg)
-    ) {
+    // PORTB ^= (1 << PORTB6);
+    // while( 
+    //         ((UCSR1A) & (1 << RXC1)) // while there is data
+    //         && (circular_increment(rx_end, 1) != rx_beg)
+    // ) {
         buf_append(UDR0, rx_buf, &rx_end);
-    }
+    // }
 }
 
 void uart0_init(unsigned long baud_rate) {
@@ -72,7 +72,7 @@ void uart0_init(unsigned long baud_rate) {
 	UBRR0L = (F_CPU/16)/baud_rate-1;
     // Control Registers
 	UCSR0B = 
-        (1<<RXCIE0) | (1<<TXCIE0)   // RX and TX INT enable
+        (1<<RXCIE0) | (1<<TXCIE0) /*| (1 <<UDRIE0)*/   // RX and TX INT enable
         |(1<<RXEN0) | (1<<TXEN0);   // receiver and transmitter
 	UCSR0C = (1<<UCSZ01) | (1<<UCSZ00);	// 8-bit
 }
@@ -87,6 +87,7 @@ uint8_t uart0_send_byte(uint8_t byte) {
 
     if( !(m_state & (1 << tx_in_progress)) ) // No transmission is in progress
         send_n_incr();
+        // UCSR0B |= (1<<UDRIE0); // enable int
 
     return 0;
 }
