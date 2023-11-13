@@ -13,4 +13,6 @@
 #define LCD_HEIGHT 64
 #define LCD_WIDTH 128
 
+#define PANEL_LENGTH 10
+
 #endif

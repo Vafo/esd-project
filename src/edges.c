@@ -1,10 +1,11 @@
+#include "edges.h"
+
 #include "config.h"
 
-#include <stdint.h>
-#include <stddef.h>
+#include "_glcd.h"
 
-#include "edges.h"
 #include "etc.h"
+
 
 edge_t m_edges[] = {
   /*left*/
@@ -123,7 +124,7 @@ uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end
   return 0;
 }
 
-void edges_check_hits(pos_t* pos, vector_t* dir, edge_t* edges, size_t size) {
+void edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size) {
   int i;
   vector_t vec_res = {
     .x = 0,
@@ -133,7 +134,7 @@ void edges_check_hits(pos_t* pos, vector_t* dir, edge_t* edges, size_t size) {
   float scale;
 
   for(i = 0; i < size; ++i) {
-    if(dot_hits_line(pos, 2/*radius*/, &edges[i].start, &edges[i].end)) {
+    if(dot_hits_line(pos, radius, &edges[i].start, &edges[i].end)) {
         print_log("HITS %d\r\n", i);
 
         // Norm vector
@@ -168,7 +169,7 @@ void edges_render(edge_t* edges, size_t size) {
 }
 
 void borders_check_hits(pos_t* pos, vector_t* dir) {
-    edges_check_hits(pos, dir, m_edges, ARR_SIZE(m_edges));
+    edges_check_hits(pos, dir, 2/*radius*/, m_edges, ARR_SIZE(m_edges));
 }
 
 void borders_render() {

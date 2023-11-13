@@ -2,6 +2,8 @@
 #define EDGES_H
 
 #include "vector.h"
+#include <stdint.h>
+#include <stddef.h>
 
 typedef struct {
   int x;
@@ -24,7 +26,7 @@ uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end
 void edges_init(edge_t* edges, size_t size);
 // Check if pos hits one of edges
 // If hits, bounces off
-void edges_check_hits(pos_t* pos, vector_t* dir, edge_t* edges, size_t size);
+void edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size);
 void edges_render(edge_t* edges, size_t size);
 
 void borders_init();

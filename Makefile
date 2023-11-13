@@ -6,6 +6,7 @@ BUILD_FOLDER := build
 SRCS := \
 	$(SRC_FOLDER)/app.c \
 	$(SRC_FOLDER)/edges.c \
+	$(SRC_FOLDER)/panel.c \
 	$(SRC_FOLDER)/uart0.c \
 	$(SRC_FOLDER)/uart1.c \
 	\

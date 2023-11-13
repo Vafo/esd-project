@@ -1,4 +1,5 @@
 #include "vector.h"
+#include <math.h>
 
 float vector_distance(vector_t* vec1, vector_t* vec2) {
   // print_log("vec1 (%f, %f) \tvec2 (%f, %f)\r\n", 

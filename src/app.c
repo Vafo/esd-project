@@ -15,6 +15,7 @@
 
 #include "vector.h"
 #include "edges.h"
+#include "panel.h"
 #include "etc.h"
 
 #include "_adc.h"
@@ -59,17 +60,33 @@ int main() {
   _delay_ms(500);
 	sei();								//never forget	
 
-  pos_t cur_pos = {
+  // Ball parameters
+  pos_t ball_pos = {
     .x = LCD_WIDTH / 2,
     .y = LCD_HEIGHT / 2  
   };
 
-  vector_t velocity = {
+  vector_t ball_vel = {
     .x = -4,
     .y = -6
   };
 
+  // Pan parameters
+  panel_t panel;
+  pos_t pan_pos = {
+    .x = 10,
+    .y = LCD_HEIGHT / 2
+  };
+
+  vector_t pan_vel = {
+    .x = 0,
+    .y = 0
+  };
+
+
   borders_init();
+  panel_init(&panel, &pan_pos);
+
   while (1)
   {
     lcd_clear();
@@ -77,26 +94,28 @@ int main() {
 
 
     /*Joystick input*/
-    // float x_fl = ( (float) adc_read(JOYSTICK_X)) / 1000;
-    // x_fl = 1 - x_fl - 0.4;
-    // float y_fl = ( (float) adc_read(JOYSTICK_Y)) / 1000 - 0.5 + 0.1;
+    float x_fl = ( (float) adc_read(JOYSTICK_X)) / 1000;
+    x_fl = 1 - x_fl - 0.4;
+    float y_fl = ( (float) adc_read(JOYSTICK_Y)) / 1000 - 0.5 + 0.1;
     
-    // fmt_size = sprintf(fmt_buf, "vel X: %f\tY: %f\t", x_fl, y_fl);
-    // uart1_send_arr(fmt_buf, fmt_size);
-    // velocity.x = x_fl;
-    // velocity.y = y_fl;
+    // print_log("vel X: %f\tY: %f\r\n", x_fl, y_fl);
+    pan_vel.x = x_fl;
+    pan_vel.y = y_fl;
 
-    
+    add_pos_comp(&pan_pos, &pan_vel, 4);
+    panel_move(&panel, &pan_pos);
     // x = x_fl * LCD_WIDTH;
     // y = y_fl * LCD_HEIGHT;
 
-    // print_log("X: %d\tY: %d\r\n", cur_pos.x, cur_pos.y);
+    // print_log("X: %d\tY: %d\r\n", ball_pos.x, ball_pos.y);
 
-    borders_check_hits(&cur_pos, &velocity);
-    add_pos_comp(&cur_pos, &velocity, 1);
+    borders_check_hits(&ball_pos, &ball_vel);
+    panel_check_hit(&panel, &ball_pos, &ball_vel);
+    add_pos_comp(&ball_pos, &ball_vel, 1);
 
     borders_render();
-    draw_circle(cur_pos.x, cur_pos.y);
+    panel_render(&panel);
+    draw_circle(ball_pos.x, ball_pos.y);
     
     _delay_ms(100);
   }
