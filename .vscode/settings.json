@@ -8,6 +8,12 @@
         "common.h": "c",
         "delay.h": "c",
         "uart.h": "c",
-        "assert.h": "c"
+        "assert.h": "c",
+        "config.h": "c",
+        "string.h": "c",
+        "stdlib.h": "c",
+        "_adc.h": "c",
+        "_glcd.h": "c",
+        "math.h": "c"
     }
 }

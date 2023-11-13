@@ -1,4 +1,5 @@
 #include "uart1.h"
+#include "config.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -65,11 +66,11 @@ SIGNAL(USART1_RX_vect) {
     // }
 }
 
-void uart1_init(unsigned long baud_rate) {
+void uart1_init() {
 	// UART1
-	// Baudrate
-    UBRR1H = ((F_CPU/16)/baud_rate - 1)>>8;		// UBRR
-	UBRR1L = (F_CPU/16)/baud_rate-1;
+	// Baudrate 9600
+    UBRR1H = USB_UBRR >> 8;
+    UBRR1L = USB_UBRR;
     // Control Registers
 	UCSR1B = 
         (1<<RXCIE1) | (1<<TXCIE1) /*| (1 <<UDRIE1)*/   // RX and TX INT enable

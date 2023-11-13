@@ -1,14 +1,21 @@
 TARGET := main
 SRC_FOLDER := src
+UTIL_FOLDER := util
 BUILD_FOLDER := build
 
 SRCS := \
 	$(SRC_FOLDER)/app.c \
+	$(SRC_FOLDER)/edges.c \
 	$(SRC_FOLDER)/uart0.c \
-	$(SRC_FOLDER)/uart1.c
+	$(SRC_FOLDER)/uart1.c \
+	\
+	$(UTIL_FOLDER)/vector.c \
+	$(UTIL_FOLDER)/_adc.c \
+	$(UTIL_FOLDER)/_glcd.c 
 
 INC_FOLDER := . \
-	./src 
+	./$(SRC_FOLDER) \
+	./$(UTIL_FOLDER)
 
 OBJS := $(SRCS:%.c=./build/%.o)
 DEPS := $(OBJS:%.o=%.d)
@@ -22,7 +29,7 @@ OBJCOPY := avr-objcopy
 AVRDUDE := avrdude
 
 C_FLAGS := $(INC) -mmcu=$(MCU) -funsigned-char -funsigned-bitfields -O3 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -Wall
-LDFLAGS := -Wl,-Map=$(TARGET).map,--cref
+LDFLAGS := -Wl,-Map=$(TARGET).map,--cref -Wl,-u,vfprintf -lprintf_flt -lm
 
 program: build
 	$(AVRDUDE) -c arduino -p m128 -P /dev/ttyUSB0 -U flash:w:$(TARGET).hex	

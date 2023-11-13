@@ -6,7 +6,7 @@
 #include <stddef.h>
 
 
-void uart0_init(unsigned long baud_rate);
+void uart0_init();
 
 uint8_t uart0_send_byte(uint8_t byte);
 uint8_t uart0_recv_byte(uint8_t* res);
