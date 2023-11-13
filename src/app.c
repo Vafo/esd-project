@@ -87,7 +87,12 @@ int main() {
     .y = LCD_HEIGHT / 2
   };
 
-  vector_t pan_vel = {
+  vector_t pan1_vel = {
+    .x = 0,
+    .y = 0
+  };
+
+  vector_t pan2_vel = {
     .x = 0,
     .y = 0
   };
@@ -96,6 +101,8 @@ int main() {
   borders_init();
   panel_init(&panel, &pan1_pos, 0);
   panel_init(&panel2, &pan2_pos, 1);
+
+  uint8_t keybrd_char;
 
   while (1)
   {
@@ -112,10 +119,25 @@ int main() {
     pan_vel.x = x_fl;
     pan_vel.y = y_fl;
 
-    add_pos_comp(&pan1_pos, &pan_vel, 4);
+    add_pos_comp(&pan1_pos, &pan_vel, 8);
     panel_move(&panel, &pan1_pos);
     // x = x_fl * LCD_WIDTH;
     // y = y_fl * LCD_HEIGHT;
+
+    uart1_recv_byte(&keybrd_char);
+    pan2_vel.x = 0;
+    pan2_vel.y = 0;
+    if(keybrd_char == 'w')
+	pan2_vel.y = -0.5;
+    if(keybrd_char == 's')
+	pan2_vel.y = 0.5;
+    if(keybrd_char == 'a')
+	pan2_vel.x = -0.5;
+    if(keybrd_char == 'd')
+	pan2_vel.x = 0.5;
+	
+    add_pos_comp(&pan2_pos, &pan2_vel, 8);
+    panel_move(&panel2, &pan2_pos);
 
     // print_log("X: %d\tY: %d\r\n", ball_pos.x, ball_pos.y);
 
