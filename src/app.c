@@ -53,8 +53,11 @@ void port_init() {
 int main() {
   // USB I/O
   uart1_init();
+  // ADC for Joystick
   adc_init();
+  // Init ports for LCD
   port_init();
+  // Init LCD
   lcd_init();
   
   _delay_ms(500);
@@ -73,8 +76,14 @@ int main() {
 
   // Pan parameters
   panel_t panel;
-  pos_t pan_pos = {
+  pos_t pan1_pos = {
     .x = 10,
+    .y = LCD_HEIGHT / 2
+  };
+
+  panel_t panel2;
+  pos_t pan2_pos = {
+    .x = LCD_WIDTH - 10,
     .y = LCD_HEIGHT / 2
   };
 
@@ -85,7 +94,8 @@ int main() {
 
 
   borders_init();
-  panel_init(&panel, &pan_pos);
+  panel_init(&panel, &pan1_pos, 0);
+  panel_init(&panel2, &pan2_pos, 1);
 
   while (1)
   {
@@ -102,8 +112,8 @@ int main() {
     pan_vel.x = x_fl;
     pan_vel.y = y_fl;
 
-    add_pos_comp(&pan_pos, &pan_vel, 4);
-    panel_move(&panel, &pan_pos);
+    add_pos_comp(&pan1_pos, &pan_vel, 4);
+    panel_move(&panel, &pan1_pos);
     // x = x_fl * LCD_WIDTH;
     // y = y_fl * LCD_HEIGHT;
 
@@ -111,10 +121,12 @@ int main() {
 
     borders_check_hits(&ball_pos, &ball_vel);
     panel_check_hit(&panel, &ball_pos, &ball_vel);
+    panel_check_hit(&panel2, &ball_pos, &ball_vel);
     add_pos_comp(&ball_pos, &ball_vel, 1);
 
     borders_render();
     panel_render(&panel);
+    panel_render(&panel2);
     draw_circle(ball_pos.x, ball_pos.y);
     
     _delay_ms(100);

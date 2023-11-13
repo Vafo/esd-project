@@ -124,7 +124,7 @@ uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end
   return 0;
 }
 
-void edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size) {
+uint8_t edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size) {
   int i;
   vector_t vec_res = {
     .x = 0,
@@ -135,7 +135,7 @@ void edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, si
 
   for(i = 0; i < size; ++i) {
     if(dot_hits_line(pos, radius, &edges[i].start, &edges[i].end)) {
-        print_log("HITS %d\r\n", i);
+        // print_log("HITS %d\r\n", i);
 
         // Norm vector
         vec_comp.x = edges[i].norm.x;
@@ -152,11 +152,11 @@ void edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, si
         dir->x = vec_res.x;
         dir->y = vec_res.y;
 
-        return;
+        return 1;
     }
   }
 
-  return;
+  return 0;
 }
 
 void edges_render(edge_t* edges, size_t size) {
