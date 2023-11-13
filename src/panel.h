@@ -4,14 +4,15 @@
 #include "edges.h"
 
 typedef enum {
-    IS_HIT,
     PLAYER_ID0
 } panel_flag_t;
 
 typedef struct {
-    pos_t pos;
-    uint8_t flag;
     edge_t edges[4];
+    uint8_t flag;
+    pos_t pos;
+    
+    uint8_t no_hit_cnt;
 } panel_t;
 
 // played_id = 0 | 1

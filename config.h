@@ -14,5 +14,6 @@
 #define LCD_WIDTH 128
 
 #define PANEL_LENGTH 10
+#define PANEL_NO_HIT_CNT 2
 
 #endif
