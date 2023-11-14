@@ -3,6 +3,7 @@
 #include "panel.h"
 
 #include "_buzzer.h"
+#include "_glcd.h"
 #include "etc.h"
 
 static gate_t m_gates[] = {
@@ -134,4 +135,11 @@ void gate_render() {
     for(i = 0; i < ARR_SIZE(m_gates); ++i) {
         s_gate_render(&m_gates[i]);
     }
+
+    lcd_xy(4, 0);
+    GLCD_1DigitDecimal(m_gates[1].num_hits, 1);
+
+    lcd_xy(4, 19);
+    GLCD_1DigitDecimal(m_gates[0].num_hits, 1);
+
 }

@@ -34,7 +34,7 @@
 #define BALL_WEIGHT 1
 #define PANEL_WEIGHT 10000
 
-#define GATE_WIDTH 4
-#define GATE_HEIGHT 10
+#define GATE_WIDTH 8
+#define GATE_HEIGHT 20
 
 #endif
