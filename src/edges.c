@@ -77,18 +77,12 @@ void edges_init(edge_t* edges, size_t size) {
     }
 }
 
-uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end) {
+uint8_t dot_hits_line(vector_t* dot, float radius, pos_t* line_beg, pos_t* line_end) {
   vector_t dir = {
     .x = line_end->x - line_beg->x,
     .y = line_end->y - line_beg->y
   };
   vector_norm(&dir);
-
-  // convert to float pos
-  vector_t dot_fl = {
-    .x = dot->x,
-    .y = dot->y
-  };
 
   vector_t line_point = {
     .x = line_beg->x,
@@ -101,7 +95,7 @@ uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end
   };
   
   float distance = vector_distance(&line_point, &line_end_fl);
-  int num_samples = distance / 2;
+  int num_samples = distance / EDGE_SAMPLE_LENGTH;
   if(num_samples != 0)
     vector_scale(&dir, (distance / num_samples));
   // print_log("SAMPLES  %d\r\n", num_samples);
@@ -115,7 +109,7 @@ uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end
     //   vector_distance(&dot_fl, &line_point)
     // );
     
-    if( vector_distance(&dot_fl, &line_point) <= radius ) {
+    if( vector_distance(dot, &line_point) <= radius ) {
       return 1;
     }
     vector_add(&line_point, &dir, 1);
@@ -124,7 +118,7 @@ uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end
   return 0;
 }
 
-uint8_t edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size) {
+uint8_t edges_check_hits(vector_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size) {
   int i;
   vector_t vec_res = {
     .x = 0,
@@ -168,8 +162,8 @@ void edges_render(edge_t* edges, size_t size) {
     );
 }
 
-void borders_check_hits(pos_t* pos, vector_t* dir) {
-    edges_check_hits(pos, dir, 2/*radius*/, m_edges, ARR_SIZE(m_edges));
+void borders_check_hits(vector_t* pos, vector_t* dir) {
+    edges_check_hits(pos, dir, BORDER_EDGE_RADIUS/*radius*/, m_edges, ARR_SIZE(m_edges));
 }
 
 void borders_render() {

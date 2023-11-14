@@ -19,18 +19,18 @@ typedef struct {
 } edge_t;
 
 
-uint8_t dot_hits_line(pos_t* dot, float radius, pos_t* line_beg, pos_t* line_end);
+uint8_t dot_hits_line(vector_t* dot, float radius, pos_t* line_beg, pos_t* line_end);
 
 // Initialize edges
 // Set normal and lateral vectors
 void edges_init(edge_t* edges, size_t size);
 // Check if pos hits one of edges
 // If hits, bounces off
-uint8_t edges_check_hits(pos_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size);
+uint8_t edges_check_hits(vector_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size);
 void edges_render(edge_t* edges, size_t size);
 
 void borders_init();
-void borders_check_hits(pos_t* pos, vector_t* dir);
+void borders_check_hits(vector_t* pos, vector_t* dir);
 void borders_render();
 
 #endif

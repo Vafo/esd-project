@@ -23,23 +23,23 @@
 
 
 // Add to cur dot pos, so that it does not exceed edges 
-void add_pos_comp(pos_t* pos, vector_t* dir, float scale) {
-  int x = pos->x + dir->x * scale;
-  int y = pos->y + dir->y * scale;
+void add_pos_comp(vector_t* pos, vector_t* dir, float scale) {
+  float x = pos->x + dir->x * scale;
+  float y = pos->y + dir->y * scale;
   
-  x = GREATER(x, 0);
-  x = SMALLER(x, LCD_WIDTH);
+  x = GREATER(x, BALL_RADIUS);
+  x = SMALLER(x, LCD_WIDTH - BALL_RADIUS);
   
-  y = GREATER(y, 0);
-  y = SMALLER(y, LCD_HEIGHT);
+  y = GREATER(y, BALL_RADIUS);
+  y = SMALLER(y, LCD_HEIGHT - BALL_RADIUS);
   
   pos->x = x;
   pos->y = y;
 }
 
 void draw_circle(int x, int y) {
-  GLCD_Circle(y, x, 2);
-  GLCD_Circle(y, x, 1);
+  GLCD_Circle(y, x, BALL_RADIUS);
+  GLCD_Circle(y, x, BALL_RADIUS-1);
 }
 
 void port_init() {
@@ -64,7 +64,7 @@ int main() {
 	sei();								//never forget	
 
   // Ball parameters
-  pos_t ball_pos = {
+  vector_t ball_pos = {
     .x = LCD_WIDTH / 2,
     .y = LCD_HEIGHT / 2  
   };
@@ -76,7 +76,7 @@ int main() {
 
   // Pan parameters
   panel_t panel0;
-  pos_t pan0_pos = {
+  vector_t pan0_pos = {
     .x = 10,
     .y = LCD_HEIGHT / 2
   };
@@ -86,7 +86,7 @@ int main() {
   };
 
   panel_t panel1;
-  pos_t pan1_pos = {
+  vector_t pan1_pos = {
     .x = LCD_WIDTH - 10,
     .y = LCD_HEIGHT / 2
   };
@@ -121,8 +121,9 @@ int main() {
     pan0_vel.x = x_fl;
     pan0_vel.y = y_fl;
     vector_norm(&pan0_vel);
+    vector_scale(&pan0_vel, PANEL_SPEED);
     // print_log("vel X: %f\tY: %f\r\n", pan0_vel.x, pan0_vel.y);
-    add_pos_comp(&pan0_pos, &pan0_vel, PANEL_SPEED);
+    add_pos_comp(&pan0_pos, &pan0_vel, 1);
     panel_move(&panel0, &pan0_pos);
     // x = x_fl * LCD_WIDTH;
     // y = y_fl * LCD_HEIGHT;
@@ -130,6 +131,7 @@ int main() {
     uart1_recv_byte(&keybrd_char);
     // pan1_vel.x = 0;
     // pan1_vel.y = 0;
+    vector_norm(&pan1_vel);
     if(keybrd_char == 'w')
       pan1_vel.y = -0.5;
     if(keybrd_char == 's')
@@ -143,18 +145,27 @@ int main() {
       pan1_vel.y = 0;
     }
 
-    vector_norm(&pan0_vel);
-    add_pos_comp(&pan1_pos, &pan1_vel, PANEL_SPEED);
+    vector_norm(&pan1_vel);
+    vector_scale(&pan1_vel, PANEL_SPEED);
+    add_pos_comp(&pan1_pos, &pan1_vel, 1);
     panel_move(&panel1, &pan1_pos);
+
+    // /*Drag of keyboard*/
+    // vector_add(&pan1_vel, &pan1_vel, -0.8);
 
     // print_log("X: %d\tY: %d\r\n", ball_pos.x, ball_pos.y);
 
+    /*Check if ball hits something*/
     borders_check_hits(&ball_pos, &ball_vel);
-    panel_check_hit(&panel0, &ball_pos, &ball_vel);
-    panel_check_hit(&panel1, &ball_pos, &ball_vel);
-    vector_norm(&ball_vel);
-    add_pos_comp(&ball_pos, &ball_vel, BALL_SPEED);
+    panel_check_hit(&panel0, &pan0_vel, &ball_pos, &ball_vel);
+    panel_check_hit(&panel1, &pan1_vel, &ball_pos, &ball_vel);
+    // vector_norm(&ball_vel);
+    add_pos_comp(&ball_pos, &ball_vel, 1);
 
+    /*Drag of board*/
+    vector_add(&ball_vel, &ball_vel, -DRAG_COEFF);
+
+    /*Render objects*/
     borders_render();
     panel_render(&panel0);
     panel_render(&panel1);

@@ -14,7 +14,7 @@ void panel_init(panel_t* panel, pos_t* pos, uint8_t player_id) {
     sei();
 }
 
-void panel_move(panel_t* panel, pos_t* pos) {
+void panel_move(panel_t* panel, vector_t* pos) {
     pos->x = GREATER(pos->x, PANEL_LENGTH/2);
     pos->x = SMALLER(pos->x, LCD_WIDTH - PANEL_LENGTH/2);
 
@@ -53,7 +53,10 @@ void panel_move(panel_t* panel, pos_t* pos) {
     panel->edges[3].end.y = pos->y - (PANEL_LENGTH)/2;
 }
 
-uint8_t panel_check_hit(panel_t* panel, pos_t* ball_pos, pos_t* ball_vel) {
+uint8_t panel_check_hit(
+    panel_t* panel, vector_t* pan_vel,
+    vector_t* ball_pos, vector_t* ball_vel
+) {
     uint8_t is_hit;
 
     // If panel already hit ball, ignore
@@ -61,14 +64,34 @@ uint8_t panel_check_hit(panel_t* panel, pos_t* ball_pos, pos_t* ball_vel) {
         --panel->no_hit_cnt;
         return 0;
     }
-    
+
+    vector_t vel_tmp = {
+        .x = ball_vel->x,
+        .y = ball_vel->y
+    };
+
     is_hit = edges_check_hits(
-        ball_pos, ball_vel,
-        4/*radius*/, panel->edges, ARR_SIZE(panel->edges)
+        ball_pos, &vel_tmp,
+        PANEL_EDGE_RADIUS/*radius*/, panel->edges, ARR_SIZE(panel->edges)
     );
 
-    if(is_hit)
+    if(is_hit) {
         panel->no_hit_cnt = PANEL_NO_HIT_CNT;
+
+        if( !((pan_vel->x == 0) && (pan_vel->y == 0)) ) { // None of vel components is zero
+            float sum = (BALL_WEIGHT+PANEL_WEIGHT);
+            vel_tmp.x = 
+                (BALL_WEIGHT - PANEL_WEIGHT)/sum * ball_vel->x +
+                (2 * PANEL_WEIGHT)/sum * pan_vel->x;
+
+            vel_tmp.y = 
+                (BALL_WEIGHT - PANEL_WEIGHT)/sum * ball_vel->y +
+                (2 * PANEL_WEIGHT)/sum * pan_vel->y;
+        }
+
+        ball_vel->x = vel_tmp.x;
+        ball_vel->y = vel_tmp.y;
+    }
 
     return is_hit;
 }

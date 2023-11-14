@@ -17,8 +17,11 @@ typedef struct {
 
 // played_id = 0 | 1
 void panel_init(panel_t* panel, pos_t* pos, uint8_t player_id);
-void panel_move(panel_t* panel, pos_t* pos);
-uint8_t panel_check_hit(panel_t* panel, pos_t* ball_pos, pos_t* ball_vel);
+void panel_move(panel_t* panel, vector_t* pos);
+uint8_t panel_check_hit(
+    panel_t* panel, vector_t* pan_vel,
+    vector_t* ball_pos, vector_t* ball_vel
+);
 void panel_render(panel_t* panel);
 
 #endif
