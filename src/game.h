@@ -23,6 +23,7 @@ typedef struct {
 void game_init(game_instance_t* game);
 void game_start_state(game_instance_t* game);
 
-void game_loop(game_instance_t* game);
+void game_loop_logic(game_instance_t* game);
+void game_loop_render(game_instance_t* game);
 
 #endif

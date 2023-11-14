@@ -46,7 +46,8 @@ int main() {
   _delay_ms(500);
   while (1)
   {
-    game_loop(&game);
+    game_loop_render(&game);
+    game_loop_logic(&game);
     _delay_ms(100);
   }
   

@@ -136,15 +136,14 @@ void game_init(game_instance_t* game) {
     gate_init(reinit_game_cb, game, reinit_game_cb, game);
 }
 
-void game_loop(game_instance_t* game) {
-    lcd_clear();
-    ScreenBuffer_clear();
-
+void game_loop_logic(game_instance_t* game) {
+    // Panel 0 input
     input_joystick(
       JOYSTICK_X, JOYSTICK_Y,
       &game->panel0, &game->pan0_pos, &game->pan0_vel
     );
 
+    // Panel 1 input
     input_keyboard(&game->panel1, &game->pan1_pos, &game->pan1_vel);
 
     // /*Drag of keyboard*/
@@ -164,11 +163,17 @@ void game_loop(game_instance_t* game) {
 
     /*Drag of board*/
     vector_add(&game->ball_vel, &game->ball_vel, -DRAG_COEFF);
+}
 
-    /*Render objects*/
+void game_loop_render(game_instance_t* game) {
+    lcd_clear();
+    ScreenBuffer_clear();
+
     borders_render();
+    
     panel_render(&game->panel0);
     panel_render(&game->panel1);
+    
     gate_render();
 
     draw_circle(game->ball_pos.x, game->ball_pos.y);
