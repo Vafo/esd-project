@@ -5,7 +5,7 @@
 
 #include <avr/interrupt.h>
 
-void panel_init(panel_t* panel, pos_t* pos, uint8_t player_id) {
+void panel_init(panel_t* panel, vector_t* pos, uint8_t player_id) {
     panel_move(panel, pos);
     edges_init(panel->edges, ARR_SIZE(panel->edges));
 

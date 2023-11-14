@@ -50,6 +50,63 @@ void port_init() {
   PORTG = 0x00;   DDRG = 0xFF;                    // PG4: Buzzer
 }
 
+void input_joystick(
+  uint8_t joy_x,
+  uint8_t joy_y,
+  panel_t* panel,
+  vector_t* panel_pos,
+  vector_t* panel_vel
+) {
+  float x_fl = ( (float) adc_read(joy_x)) / 1000;
+  x_fl = 1 - x_fl - 0.4;
+  float y_fl = ( (float) adc_read(joy_y)) / 1000 - 0.5;
+  if(ABS(x_fl) < 0.1)
+    x_fl = 0;
+  if(ABS(y_fl) < 0.1)
+    y_fl = 0;
+
+  // print_log("raw X: %f\tY: %f\r\n", x_fl, y_fl);
+  panel_vel->x = x_fl;
+  panel_vel->y = y_fl;
+  vector_norm(panel_vel);
+  vector_scale(panel_vel, PANEL_SPEED);
+  // print_log("vel X: %f\tY: %f\r\n", pan0_vel.x, pan0_vel.y);
+  add_pos_comp(panel_pos, panel_vel, 1);
+  panel_move(panel, panel_pos);
+  // x = x_fl * LCD_WIDTH;
+  // y = y_fl * LCD_HEIGHT;
+}
+
+void input_keyboard(
+  panel_t* panel,
+  vector_t* panel_pos,
+  vector_t* panel_vel
+) {
+  uint8_t keybrd_char;
+
+  uart1_recv_byte(&keybrd_char);
+  // pan1_vel.x = 0;
+  // pan1_vel.y = 0;
+  vector_norm(panel_vel);
+  if(keybrd_char == 'w')
+    panel_vel->y = -0.5;
+  if(keybrd_char == 's')
+    panel_vel->y = 0.5;
+  if(keybrd_char == 'a')
+    panel_vel->x = -0.5;
+  if(keybrd_char == 'd')
+    panel_vel->x = 0.5;
+  if(keybrd_char == ' ') {
+    panel_vel->x = 0;
+    panel_vel->y = 0;
+  }
+
+  vector_norm(panel_vel);
+  vector_scale(panel_vel, PANEL_SPEED);
+  add_pos_comp(panel_pos, panel_vel, 1);
+  panel_move(panel, panel_pos);
+}
+
 int main() {
   // USB I/O
   uart1_init();
@@ -98,6 +155,7 @@ int main() {
 
   borders_init();
   panel_init(&panel0, &pan0_pos, 0);
+  _delay_ms(100);
   panel_init(&panel1, &pan1_pos, 1);
 
   uint8_t keybrd_char;
@@ -107,48 +165,12 @@ int main() {
     lcd_clear();
     ScreenBuffer_clear();
 
+    input_joystick(
+      JOYSTICK_X, JOYSTICK_Y,
+      &panel0, &pan0_pos, &pan0_vel
+    );
 
-    /*Joystick input*/
-    float x_fl = ( (float) adc_read(JOYSTICK_X)) / 1000;
-    x_fl = 1 - x_fl - 0.4;
-    float y_fl = ( (float) adc_read(JOYSTICK_Y)) / 1000 - 0.5;
-    if(ABS(x_fl) < 0.1)
-      x_fl = 0;
-    if(ABS(y_fl) < 0.1)
-      y_fl = 0;
-
-    // print_log("raw X: %f\tY: %f\r\n", x_fl, y_fl);
-    pan0_vel.x = x_fl;
-    pan0_vel.y = y_fl;
-    vector_norm(&pan0_vel);
-    vector_scale(&pan0_vel, PANEL_SPEED);
-    // print_log("vel X: %f\tY: %f\r\n", pan0_vel.x, pan0_vel.y);
-    add_pos_comp(&pan0_pos, &pan0_vel, 1);
-    panel_move(&panel0, &pan0_pos);
-    // x = x_fl * LCD_WIDTH;
-    // y = y_fl * LCD_HEIGHT;
-
-    uart1_recv_byte(&keybrd_char);
-    // pan1_vel.x = 0;
-    // pan1_vel.y = 0;
-    vector_norm(&pan1_vel);
-    if(keybrd_char == 'w')
-      pan1_vel.y = -0.5;
-    if(keybrd_char == 's')
-      pan1_vel.y = 0.5;
-    if(keybrd_char == 'a')
-      pan1_vel.x = -0.5;
-    if(keybrd_char == 'd')
-      pan1_vel.x = 0.5;
-    if(keybrd_char == ' ') {
-      pan1_vel.x = 0;
-      pan1_vel.y = 0;
-    }
-
-    vector_norm(&pan1_vel);
-    vector_scale(&pan1_vel, PANEL_SPEED);
-    add_pos_comp(&pan1_pos, &pan1_vel, 1);
-    panel_move(&panel1, &pan1_pos);
+    input_keyboard(&panel1, &pan1_pos, &pan1_vel);
 
     // /*Drag of keyboard*/
     // vector_add(&pan1_vel, &pan1_vel, -0.8);
