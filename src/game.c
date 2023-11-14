@@ -88,6 +88,13 @@ static void input_keyboard(
   panel_move(panel, panel_pos);
 }
 
+void reinit_game_cb(void* ctx) {
+    assert(ctx != NULL);
+    
+    game_instance_t* game = (game_instance_t*) ctx; 
+    game_start_state(game);
+}
+
 void game_start_state(game_instance_t* game) {
     assert(game != NULL);
     // Ball parameters
@@ -96,8 +103,8 @@ void game_start_state(game_instance_t* game) {
     game->ball_pos.y = LCD_HEIGHT / 2;
 
     // Ball velocity
-    game->ball_vel.x = -4;
-    game->ball_vel.y = -6;
+    game->ball_vel.x = 0;
+    game->ball_vel.y = 0;
 
     // Pan parameters
     // Panel 0
@@ -126,7 +133,7 @@ void game_init(game_instance_t* game) {
     borders_init();
     panel_init(&game->panel0, &game->pan0_pos, PLAYER_ID0);
     panel_init(&game->panel1, &game->pan1_pos, PLAYER_ID1);
-    gate_init(NULL, NULL);
+    gate_init(reinit_game_cb, game, reinit_game_cb, game);
 }
 
 void game_loop(game_instance_t* game) {

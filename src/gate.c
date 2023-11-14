@@ -83,11 +83,12 @@ static gate_t m_gates[] = {
 };
 
 
-static void s_gate_init(gate_t* gate, on_gate_hit callback) {
+static void s_gate_init(gate_t* gate, on_gate_hit callback, void* ctx) {
     edges_init(gate->edges, ARR_SIZE(gate->edges));
     
     gate->num_hits = 0;
     gate->cb = callback;
+    gate->ctx = ctx;
 }
 
 static uint8_t s_gate_check_hits(gate_t* gate, vector_t* ball_pos) {
@@ -104,7 +105,7 @@ static uint8_t s_gate_check_hits(gate_t* gate, vector_t* ball_pos) {
         }
         
         if(gate->cb != NULL)
-            gate->cb(gate);
+            gate->cb(gate->ctx);
         return 1;
     }
 
@@ -115,9 +116,9 @@ static void s_gate_render(gate_t* gate) {
     edges_render(gate->edges, ARR_SIZE(gate->edges));
 }
 
-void gate_init(on_gate_hit cb1, on_gate_hit cb2) {
-    s_gate_init(&m_gates[0], cb1);
-    // s_gate_init(&m_gates[1], cb2);
+void gate_init(on_gate_hit cb1, void* ctx1, on_gate_hit cb2, void* ctx2) {
+    s_gate_init(&m_gates[0], cb1, ctx1);
+    s_gate_init(&m_gates[1], cb2, ctx2);
 }
 
 uint8_t gate_check_hits(vector_t* ball_pos) {
