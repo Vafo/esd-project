@@ -19,6 +19,7 @@
 
 #define BORDER_EDGE_RADIUS 4
 #define PANEL_EDGE_RADIUS 6
+#define GATE_EDGE_RADIUS 3
 
 #define BALL_RADIUS 2
 
@@ -32,5 +33,8 @@
 
 #define BALL_WEIGHT 1
 #define PANEL_WEIGHT 10000
+
+#define GATE_WIDTH 4
+#define GATE_HEIGHT 10
 
 #endif

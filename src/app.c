@@ -16,6 +16,7 @@
 #include "vector.h"
 #include "edges.h"
 #include "panel.h"
+#include "gate.h"
 #include "etc.h"
 
 #include "_adc.h"
@@ -157,6 +158,7 @@ int main() {
   panel_init(&panel0, &pan0_pos, PLAYER_ID0);
   _delay_ms(100);
   panel_init(&panel1, &pan1_pos, PLAYER_ID1);
+  gate_init(NULL, NULL);
 
   while (1)
   {
@@ -182,6 +184,9 @@ int main() {
     // vector_norm(&ball_vel);
     add_pos_comp(&ball_pos, &ball_vel, 1);
 
+    /*Check if ball hits*/
+    gate_check_hits(&ball_pos);
+
     /*Drag of board*/
     vector_add(&ball_vel, &ball_vel, -DRAG_COEFF);
 
@@ -189,6 +194,8 @@ int main() {
     borders_render();
     panel_render(&panel0);
     panel_render(&panel1);
+    gate_render();
+
     draw_circle(ball_pos.x, ball_pos.y);
     
     _delay_ms(100);
