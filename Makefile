@@ -12,7 +12,9 @@ SRCS := \
 	\
 	$(UTIL_FOLDER)/vector.c \
 	$(UTIL_FOLDER)/_adc.c \
-	$(UTIL_FOLDER)/_glcd.c 
+	$(UTIL_FOLDER)/_glcd.c \
+	$(UTIL_FOLDER)/_buzzer.c 
+	
 
 INC_FOLDER := . \
 	./$(SRC_FOLDER) \

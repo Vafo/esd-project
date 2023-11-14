@@ -4,7 +4,8 @@
 #include "edges.h"
 
 typedef enum {
-    PLAYER_ID0
+    PLAYER_ID0,
+    PLAYER_ID1
 } panel_flag_t;
 
 typedef struct {

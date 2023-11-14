@@ -154,11 +154,9 @@ int main() {
 
 
   borders_init();
-  panel_init(&panel0, &pan0_pos, 0);
+  panel_init(&panel0, &pan0_pos, PLAYER_ID0);
   _delay_ms(100);
-  panel_init(&panel1, &pan1_pos, 1);
-
-  uint8_t keybrd_char;
+  panel_init(&panel1, &pan1_pos, PLAYER_ID1);
 
   while (1)
   {

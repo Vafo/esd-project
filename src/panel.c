@@ -1,7 +1,9 @@
 #include "panel.h"
 #include "config.h"
 #include "etc.h"
+
 #include "_glcd.h"
+#include "_buzzer.h"
 
 #include <avr/interrupt.h>
 
@@ -10,7 +12,7 @@ void panel_init(panel_t* panel, vector_t* pos, uint8_t player_id) {
     edges_init(panel->edges, ARR_SIZE(panel->edges));
 
     cli();
-    panel->flag |= (player_id & 0x01) << PLAYER_ID0;
+    panel->flag = player_id;
     sei();
 }
 
@@ -91,6 +93,13 @@ uint8_t panel_check_hit(
 
         ball_vel->x = vel_tmp.x;
         ball_vel->y = vel_tmp.y;
+
+        if(panel->flag == PLAYER_ID0) {
+            Sound(BB,HSi);
+        } else {
+            Sound(SB,HLa);
+        }
+
     }
 
     return is_hit;
@@ -99,7 +108,7 @@ uint8_t panel_check_hit(
 void panel_render(panel_t* panel) {
     edges_render(panel->edges, ARR_SIZE(panel->edges));
 
-    if(panel->flag & (1<<PLAYER_ID0)) {
+    if(panel->flag == PLAYER_ID0) {
         // draw circle for player 1
         GLCD_Circle(panel->pos.y, panel->pos.x, 2);
     } else {
