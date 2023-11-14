@@ -3,11 +3,15 @@
 #include "etc.h"
 #include "_glcd.h"
 
+#include <avr/interrupt.h>
+
 void panel_init(panel_t* panel, pos_t* pos, uint8_t player_id) {
     panel_move(panel, pos);
     edges_init(panel->edges, ARR_SIZE(panel->edges));
 
+    cli();
     panel->flag |= (player_id & 0x01) << PLAYER_ID0;
+    sei();
 }
 
 void panel_move(panel_t* panel, pos_t* pos) {

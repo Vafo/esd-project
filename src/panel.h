@@ -9,8 +9,8 @@ typedef enum {
 
 typedef struct {
     edge_t edges[4];
-    uint8_t flag;
     pos_t pos;
+    uint8_t flag;
     
     uint8_t no_hit_cnt;
 } panel_t;

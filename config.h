@@ -14,6 +14,11 @@
 #define LCD_WIDTH 128
 
 #define PANEL_LENGTH 10
-#define PANEL_NO_HIT_CNT 2
+#define PANEL_NO_HIT_CNT 0
+
+#define BALL_SPEED 4
+#define PANEL_SPEED 4
+
+#define SECOND_JOYSTICK 1
 
 #endif

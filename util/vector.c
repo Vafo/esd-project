@@ -14,6 +14,10 @@ float vector_distance(vector_t* vec1, vector_t* vec2) {
 void vector_norm(vector_t* src) {
   float rev_norm = src->x * src->x + src->y * src->y;
   rev_norm = sqrtf(rev_norm);
+  
+  if(rev_norm == 0)
+    return;
+  
   src->x = src->x / rev_norm;
   src->y = src->y / rev_norm;
 }
