@@ -118,8 +118,17 @@ uint8_t dot_hits_line(vector_t* dot, float radius, pos_t* line_beg, pos_t* line_
   return 0;
 }
 
+int8_t edges_is_hit(vector_t* pos, float radius, edge_t* edges, size_t size) {
+  size_t i;
+  for(i = 0; i < size; ++i) 
+    if(dot_hits_line(pos, radius, &edges[i].start, &edges[i].end))
+      return i;
+  
+  return -1;
+}
+
 uint8_t edges_check_hits(vector_t* pos, vector_t* dir, float radius, edge_t* edges, size_t size) {
-  int i;
+  int8_t i;
   vector_t vec_res = {
     .x = 0,
     .y = 0
@@ -127,27 +136,25 @@ uint8_t edges_check_hits(vector_t* pos, vector_t* dir, float radius, edge_t* edg
   vector_t vec_comp;
   float scale;
 
-  for(i = 0; i < size; ++i) {
-    if(dot_hits_line(pos, radius, &edges[i].start, &edges[i].end)) {
-        // print_log("HITS %d\r\n", i);
+  if( (i = edges_is_hit(pos, radius, edges, size)) != -1 ) {
+      // print_log("HITS %d\r\n", i);
 
-        // Norm vector
-        vec_comp.x = edges[i].norm.x;
-        vec_comp.y = edges[i].norm.y;
-        scale = vector_dot_prod(dir, &vec_comp);
-        vector_add(&vec_res, &vec_comp, -scale);
-            
-        // Lateral vector
-        vec_comp.x = edges[i].lat.x;
-        vec_comp.y = edges[i].lat.y;
-        scale = vector_dot_prod(dir, &vec_comp);
-        vector_add(&vec_res, &vec_comp, scale);
+      // Norm vector
+      vec_comp.x = edges[i].norm.x;
+      vec_comp.y = edges[i].norm.y;
+      scale = vector_dot_prod(dir, &vec_comp);
+      vector_add(&vec_res, &vec_comp, -scale);
+          
+      // Lateral vector
+      vec_comp.x = edges[i].lat.x;
+      vec_comp.y = edges[i].lat.y;
+      scale = vector_dot_prod(dir, &vec_comp);
+      vector_add(&vec_res, &vec_comp, scale);
 
-        dir->x = vec_res.x;
-        dir->y = vec_res.y;
+      dir->x = vec_res.x;
+      dir->y = vec_res.y;
 
-        return 1;
-    }
+      return 1;
   }
 
   return 0;
