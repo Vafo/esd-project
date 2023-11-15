@@ -48,19 +48,14 @@
 void delay_us_Melody(int data)
 {	int i;	for(i=0;i<data;i++)	{		_delay_us(1);	}}
 
-
-void Sound(unsigned int ch, unsigned int time) {
-	
+void Sound(unsigned int ch, unsigned int time)
+{	unsigned int tim;
+	tim = ch;
+	tim = tim*1000 / time;
+	while(tim--){		MelOn;		delay_us_Melody(time);
+						MelOff;		delay_us_Melody(time);
+	}
 }
-
-// void Sound(unsigned int ch, unsigned int time)
-// {	unsigned int tim;
-// 	tim = ch;
-// 	tim = tim*1000 / time;
-// 	while(tim--){		MelOn;		delay_us_Melody(time);
-// 						MelOff;		delay_us_Melody(time);
-// 	}
-// }
 
 void S_Good()        {     Sound(BB,BDo);    Sound(BB,BSo);          }
 void SError(void)    {     Sound(SB,LDo);                            }

@@ -105,7 +105,7 @@ static uint8_t s_gate_check_hits(gate_t* gate, vector_t* ball_pos) {
         }
         
         if(gate->cb != NULL)
-            gate->cb(gate->ctx);
+            gate->cb(gate, gate->ctx);
         return 1;
     }
 

@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <avr/io.h>
+#include <avr/eeprom.h>
 
 #include "gate.h"
 #include "edges.h"
@@ -88,11 +89,43 @@ static void input_keyboard(
   panel_move(panel, panel_pos);
 }
 
-void reinit_game_cb(void* ctx) {
-    assert(ctx != NULL);
-    
-    game_instance_t* game = (game_instance_t*) ctx; 
-    game_start_state(game);
+#define IS_VALID_ADDR 60
+#define PANEL0_SCORE_ADDR 61
+#define PANEL1_SCORE_ADDR 62
+
+void reinit_game_cb(gate_t* gate, void* ctx) {
+  assert(ctx != NULL);
+
+  game_instance_t* game = (game_instance_t*) ctx; 
+  game_start_state(game);
+  
+  uint8_t p0, p1;
+
+  // Check who scored
+  if(gate->player_id == PLAYER_ID0) {
+    p0 = 0;
+    p1 = 1;
+  } else {
+    p0 = 1;
+    p1 = 0;
+  }
+
+  // If it is first time writing to EEPROM
+  uint8_t is_valid = eeprom_read_byte(IS_VALID_ADDR);
+  if(is_valid != 0xFF) {
+    p0 += eeprom_read_byte(PANEL0_SCORE_ADDR);
+    p1 += eeprom_read_byte(PANEL1_SCORE_ADDR);
+  } {
+    eeprom_write_byte(IS_VALID_ADDR, 0x00);
+  }
+
+  eeprom_write_byte(PANEL0_SCORE_ADDR, p0);
+  eeprom_write_byte(PANEL1_SCORE_ADDR, p1);
+
+  uint8_t fmt[128];
+  size_t size;
+  size = sprintf(fmt, "PLAYER%d SCORED!\r\nPLAYER0: %d\tPLAYER1: %d\r\n", gate->player_id, p0, p1);
+  uart1_send_arr(fmt, size);
 }
 
 void game_start_state(game_instance_t* game) {

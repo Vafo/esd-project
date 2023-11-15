@@ -15,7 +15,7 @@ SRCS := \
 	$(UTIL_FOLDER)/vector.c \
 	$(UTIL_FOLDER)/_adc.c \
 	$(UTIL_FOLDER)/_glcd.c \
-	$(UTIL_FOLDER)/_buzzer.c 
+	$(UTIL_FOLDER)/_buzzer.c
 	
 
 INC_FOLDER := . \
@@ -56,7 +56,7 @@ $(BUILD_FOLDER)/%.o: %.c
 .PHONY: clean connect
 
 connect:
-	picocom /dev/ttyUSB0 -b 9600 --omap crcrlf -c
+	picocom /dev/ttyUSB0 -b 9600 --omap crcrlf
 
 clean:
 	rm -rf build

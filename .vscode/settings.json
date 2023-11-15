@@ -15,6 +15,7 @@
         "_adc.h": "c",
         "_glcd.h": "c",
         "math.h": "c",
-        "_buzzer.h": "c"
+        "_buzzer.h": "c",
+        "eeprom.h": "c"
     }
 }

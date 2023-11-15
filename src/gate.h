@@ -4,9 +4,11 @@
 #include "edges.h"
 #include "vector.h"
 
-typedef void (*on_gate_hit)(void* ctx);
+struct gate_s;
 
-typedef struct {
+typedef void (*on_gate_hit)(struct gate_s* gate, void* ctx);
+
+typedef struct gate_s {
     uint8_t num_hits;
     uint8_t player_id;
     edge_t edges[3];
